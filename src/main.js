@@ -219,7 +219,7 @@ class LINE extends LineAPI {
             })
         }
 
-        if(txt === 'usirsemua' && this.stateStatus.kick == 1 && isAdminOrBot(seq.from)) {
+        if(txt === 'bkontol' && this.stateStatus.kick == 1 && isAdminOrBot(seq.from)) {
             let { listMember } = await this.searchGroup(seq.to);
             for (var i = 0; i < listMember.length; i++) {
                 if(!isAdminOrBot(listMember[i].mid)){
@@ -238,7 +238,7 @@ class LINE extends LineAPI {
             this._sendMessage(seq, `Remove all check reader on memory`);
         }  
 
-        if(txt == 'ricek'){
+        if(txt == 'sider'){
             let rec = await this.recheck(this.checkReader,seq.to);
             const mentions = await this.mention(rec);
             seq.contentMetadata = mentions.cmddata;
@@ -273,12 +273,12 @@ class LINE extends LineAPI {
             })
         }
 
-        const joinByUrl = ['ourl','curl'];
+        const joinByUrl = ['open','close'];
         if(joinByUrl.includes(txt)) {
-            this._sendMessage(seq,`Updating group ...`);
+            this._sendMessage(seq,`Done`);
             let updateGroup = await this._getGroup(seq.to);
             updateGroup.preventJoinByTicket = true;
-            if(txt == 'ourl') {
+            if(txt == 'open') {
                 updateGroup.preventJoinByTicket = false;
                 const groupUrl = await this._reissueGroupTicket(seq.to)
                 this._sendMessage(seq,`Line group = line://ti/g/${groupUrl}`);
@@ -292,13 +292,13 @@ class LINE extends LineAPI {
             await this._acceptGroupInvitationByTicket(id,ticketId);
         }
 
-        if(cmd == 'spm' && isAdminOrBot(seq.from)) { // untuk spam invite contoh: spm <mid>
+        if(cmd == 'spam' && isAdminOrBot(seq.from)) { // untuk spam invite contoh: spm <mid>
             for (var i = 0; i < 4; i++) {
                 this._createGroup(`spam`,payload);
             }
         }
         
-        if(cmd == 'left'  && isAdminOrBot(seq.from)) { //untuk left dari group atau spam group contoh left <alfath>
+        if(cmd == 'leave'  && isAdminOrBot(seq.from)) { //untuk left dari group atau spam group contoh left <alfath>
             this.leftGroupByName(payload)
         }
 
