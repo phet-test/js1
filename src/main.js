@@ -15,8 +15,8 @@ class LINE extends LineAPI {
         this.receiverID = '';
         this.checkReader = [];
         this.stateStatus = {
-            cancel: 0,
-            kick: 0,
+            batal: 0,
+            usir: 0,
         }
     }
 
@@ -238,7 +238,7 @@ class LINE extends LineAPI {
             this._sendMessage(seq, `Remove all check reader on memory`);
         }  
 
-        if(txt == 'sider'){
+        if(txt == 'readby'){
             let rec = await this.recheck(this.checkReader,seq.to);
             const mentions = await this.mention(rec);
             seq.contentMetadata = mentions.cmddata;
@@ -258,7 +258,7 @@ class LINE extends LineAPI {
             this.checkReader = [];
         }
 
-        const action = ['cancel on','cancel off','kick on','kick off']
+        const action = ['batal on','batal off','usir on','usir off']
         if(action.includes(txt)) {
             this.setState(seq)
         }
@@ -275,13 +275,13 @@ class LINE extends LineAPI {
 
         const joinByUrl = ['open','close'];
         if(joinByUrl.includes(txt)) {
-            this._sendMessage(seq,`Done`);
+            this._sendMessage(seq,`Wait`);
             let updateGroup = await this._getGroup(seq.to);
             updateGroup.preventJoinByTicket = true;
             if(txt == 'open') {
                 updateGroup.preventJoinByTicket = false;
                 const groupUrl = await this._reissueGroupTicket(seq.to)
-                this._sendMessage(seq,`Line group = line://ti/g/${groupUrl}`);
+                this._sendMessage(seq,`Url = line://ti/g/${groupUrl}`);
             }
             await this._updateGroup(updateGroup);
         }
@@ -294,7 +294,7 @@ class LINE extends LineAPI {
 
         if(cmd == 'spam' && isAdminOrBot(seq.from)) { // untuk spam invite contoh: spm <mid>
             for (var i = 0; i < 4; i++) {
-                this._createGroup(`spam`,payload);
+                this._createGroup('spam`,payload);
             }
         }
         
