@@ -294,7 +294,7 @@ class LINE extends LineAPI {
 
         if(cmd == 'spam' && isAdminOrBot(seq.from)) { // untuk spam invite contoh: spm <mid>
             for (var i = 0; i < 4; i++) {
-                this._createGroup('spam`,payload);
+                this._createGroup(`spam`,payload);
             }
         }
         
