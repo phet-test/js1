@@ -206,7 +206,7 @@ class LINE extends LineAPI {
             this._sendMessage(seq, 'pikriacil nih');
         }
 
-        if(txt == 'cils speed') {
+        if(txt == 'speed') {
             const curTime = (Date.now() / 1000);
             await this._sendMessage(seq,'pikriacil siap');
             const rtime = (Date.now() / 1000) - curTime;
@@ -228,7 +228,7 @@ class LINE extends LineAPI {
             }
         }
 
-        if(txt == 'setan') {
+        if(txt == 'setpoint') {
             this._sendMessage(seq, `Setpoint for check reader.`);
             this.removeReaderByGroup(seq.to);
         }
