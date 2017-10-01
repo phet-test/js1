@@ -121,7 +121,7 @@ class LINE extends LineAPI {
             this.stateStatus[action] = state;
             this._sendMessage(seq,`Status: \n${JSON.stringify(this.stateStatus)}`);
         } else {
-            this._sendMessage(seq,`You Are Not Admin`);
+            this._sendMessage(seq,`Maaf lu siapa nyuruh2?`);
         }
     }
 
