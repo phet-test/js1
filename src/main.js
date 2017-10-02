@@ -189,7 +189,7 @@ class LINE extends LineAPI {
         let txt = textMessages.toLowerCase();
         let messageID = seq.id;
 
-        if(cmd == 'gajadi') {
+        if(cmd == 'cancelAll') {
             if(payload == 'group') {
                 let groupid = await this._getGroupsInvited();
                 for (let i = 0; i < groupid.length; i++) {
@@ -202,11 +202,11 @@ class LINE extends LineAPI {
             }
         }
 
-        if(txt == 'halo' || txt == 'cilsya') {
-            this._sendMessage(seq, 'pikriacil nih');
+        if(txt == 'halo' || txt == 'cil') {
+            this._sendMessage(seq, 'Apa kontol');
         }
 
-        if(txt == 'speed') {
+        if(txt == 'Speed') {
             const curTime = (Date.now() / 1000);
             await this._sendMessage(seq,'pikriacil siap');
             const rtime = (Date.now() / 1000) - curTime;
@@ -258,7 +258,7 @@ class LINE extends LineAPI {
             this.checkReader = [];
         }
 
-        const action = ['batal on','batal off','usir on','usir off']
+        const action = ['cancel on','cancel off','kick on','kick off']
         if(action.includes(txt)) {
             this.setState(seq)
         }
