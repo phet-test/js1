@@ -2,7 +2,8 @@ const LineAPI = require('./api');
 const { Message, OpType, Location } = require('../curve-thrift/line_types');
 let exec = require('child_process').exec;
 
-const myBot = ['u17ce7606c05a31e55cfccb35487cfbf3','u8ffd44e41e49131ccbd6e3320cccfbe3','u1a49cc167e3107826637a4a0052ceecc','u848339da8f4d7925af4edef909fc075f','u93f88932f5cafdb4dc3c951dae518ed9']
+const myBot = ['u17ce7606c05a31e55cfccb35487cfbf3','u683d36923b9d7437ab921802ee057026','u37e80fc1b2865fd049f16b4e175569b8','u2e8a00457a4f6a0e37b3140609cc7a95','u1a49cc167e3107826637a4a0052ceecc','u848339da8f4d7925af4edef909fc075f','u364ca880ccef9f2440b283c41ad098f9'];
+
 
 function isAdminOrBot(param) {
     return myBot.includes(param);
@@ -15,8 +16,10 @@ class LINE extends LineAPI {
         this.receiverID = '';
         this.checkReader = [];
         this.stateStatus = {
-            batal: 0,
-            usir: 0,
+            cancel: 0,
+            kick: 0,
+            qr: 0,
+            protect: 0,
         }
     }
 
@@ -32,7 +35,6 @@ class LINE extends LineAPI {
 
     poll(operation) {
         if(operation.type == 25 || operation.type == 26) {
-            // console.log(operation);
             const txt = (operation.message.text !== '' && operation.message.text != null ) ? operation.message.text : '' ;
             let message = new Message(operation.message);
             this.receiverID = message.to = (operation.message.to === myBot[0]) ? operation.message.from_ : operation.message.to ;
@@ -46,7 +48,7 @@ class LINE extends LineAPI {
 
         if(operation.type == 19) { //ada kick
             // op1 = group nya
-            // op2 = yang 'ngee' kick
+            // op2 = yang 'nge' kick
             // op3 = yang 'di' kick
             if(isAdminOrBot(operation.param3)) {
                 this._invite(operation.param1,[operation.param3]);
@@ -56,7 +58,64 @@ class LINE extends LineAPI {
             } 
 
         }
-
+      
+        
+        if(operation.type == 11 && this.stateStatus.protect == 1) {
+            if(!isAdminOrBot(operation.param2)) {
+                this._kickMember(operation.param1,[operation.param2]);
+            }
+        }
+      
+        if(operation.type == 13 && this.stateStatus.protect == 1) {
+            if(!isAdminOrBot(operation.param2)) {
+                this._kickMember(operation.param1,[operation.param2]);
+            }
+        }
+      
+        if(operation.type == 16){
+          let seq = new Message();
+          seq.to = operation.param1;
+          seq.text = "Terimaksih telah mengundang saya ke Groupmu 😎😎😎\n\nsilahkan ketik (Command) untuk mengetahui Fitur kami.\n\nJangan lupa Add creator kami👍"
+              this._client.sendMessage(0, seq);
+        }
+      
+        if(operation.type == 17){
+          let seq = new Message();
+          seq.to = operation.param1;
+          seq.text = "Welcome to the group, Jangan Lupa Bahagia :*"
+              this._client.sendMessage(0, seq);
+        }
+      
+        if(operation.type == 15){
+          let seq = new Message();
+          seq.to = operation.param1;
+          seq.text = "Yach..,kabur"
+              this._client.sendMessage(0, seq);
+       }
+      
+        if(operation.type == 19){
+          let seq = new Message();
+          seq.to = operation.param1;
+          seq.text = "awas..,r"
+              this._client.sendMessage(0, seq);
+        }
+      
+        if(operation.type == 15) { //Ada Leave
+             // op1 = groupnya
+             // op2 = yang 'telah' leave
+             if(isAdminOrBot(operation.param2));
+                 this._invite(operation.param1,[operation.param2]);
+             }
+      
+        if(operation.type == 25){
+                 this._client.removeAllMessages(operation.param1);
+             }
+      
+        if(operation.type == 26){
+                 this._client.removeAllMessages(operation.param1);
+             }
+    
+ 
         if(operation.type == 55){ //ada reader
 
             const idx = this.checkReader.findIndex((v) => {
@@ -74,7 +133,7 @@ class LINE extends LineAPI {
                             this.checkReader[i].timeSeen.push(operation.param3);
                         }
                     }
-                }
+              }
             }
         }
 
@@ -87,7 +146,7 @@ class LINE extends LineAPI {
         }
         this.getOprationType(operation);
     }
-
+  
     async cancelAll(gid) {
         let { listPendingInvite } = await this.searchGroup(gid);
         if(listPendingInvite.length > 0){
@@ -121,7 +180,7 @@ class LINE extends LineAPI {
             this.stateStatus[action] = state;
             this._sendMessage(seq,`Status: \n${JSON.stringify(this.stateStatus)}`);
         } else {
-            this._sendMessage(seq,`Maaf lu siapa nyuruh2?`);
+            this._sendMessage(seq,`Siapa kamu,nyuruh2...😈😈😈`);
         }
     }
 
@@ -167,7 +226,7 @@ class LINE extends LineAPI {
         
         let contactMember = await this._getContacts(users);
         return contactMember.map((z) => {
-                return { displayName: z.displayName };
+                return { displayName: z.displayName, mid: z.mid };
             });
     }
 
@@ -188,8 +247,66 @@ class LINE extends LineAPI {
         payload = payload.join(' ');
         let txt = textMessages.toLowerCase();
         let messageID = seq.id;
+      
+        var group = await this._getGroup(seq.to); 
+        
+        var a_p = "";
+        var hari_ini = new Date();
+        var jam = hari_ini.getHours();
+        var wib = (jam-1);
+        var menit = hari_ini.getMinutes();
+        var detik = hari_ini.getSeconds();
 
-        if(cmd == 'cancelAll') {
+        var bulanku = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        var hariku = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum&#39;at', 'Sabtu'];
+        var date = new Date();
+        var tanggal = date.getDate();
+        var bulan = date.getMonth(),
+            bulan = bulanku[bulan];
+        var hariIni = date.getDay(),
+            hariIni = hariku[hariIni];
+        var tahunku = date.getYear();
+        var tahun = (tahunku < 1000) ? tahunku + 1900 : tahunku;
+      
+        if(group.preventJoinByTicket==false&& this.stateStatus.qr == 1 && isAdminOrBot(seq.from)){     
+            this._sendMessage(seq,'Jgn buka QR...,\nntar dikick lho...!!');
+            group.preventJoinByTicket=true;
+            await this._updateGroup(group);
+         }  
+      
+        if (txt== 'g creator'){                    
+            seq.contentType=13;
+            seq.contentMetadata = {mid: group.creator.mid};
+            this._client.sendMessage(1,seq);
+         } 
+      
+        if(txt == 'g info') {
+          let a = group.name;
+          let b = group.creator.displayName;
+          let c = group.id;
+          let d = group.members.length;
+          this._sendMessage(seq, `🔛GROUP_NAME 👉 ${a}\n\n🔛GROUP_CREATOR\n👉 ${b} 👌\n\n🔛GROUP_ID\n👉 ${c}\n\n🔛GROUP_MEMBER\n👉${d} Ekor(👍)`)
+        }
+      
+        if(txt == 'bot creator') {
+        	seq.contentType=13;
+            seq.contentMetadata = { mid: 'u17ce7606c05a31e55cfccb35487cfbf3' };
+            this._client.sendMessage(1, seq);
+        }
+      
+        if(txt == 'admin1') {
+        	seq.contentType=13;
+            seq.contentMetadata = { mid: 'u17ce7606c05a31e55cfccb35487cfbf3' };
+            this._client.sendMessage(1, seq);
+        }
+      
+        if(txt == 'admin2') {
+        	seq.contentType=13;
+            seq.contentMetadata = { mid: 'u37e80fc1b2865fd049f16b4e175569b8' };
+            this._client.sendMessage(1, seq);
+        }
+      
+        if(cmd == 'cancel') {
             if(payload == 'group') {
                 let groupid = await this._getGroupsInvited();
                 for (let i = 0; i < groupid.length; i++) {
@@ -201,16 +318,28 @@ class LINE extends LineAPI {
                 this.cancelAll(seq.to);
             }
         }
+       
+        if(txt == 'waktu') {
+            this._sendMessage(seq, `🔛Sekarang Menunjukkan Pukul🔛\n\n⏱⏱⏱ ${wib}:${menit}:${detik} WIB ⏱⏱⏱`);
+            }
 
-        if(txt == 'halo' || txt == 'cil') {
-            this._sendMessage(seq, 'Apa kontol');
-        }
-
-        if(txt == 'Speed') {
-            const curTime = (Date.now() / 1000);
-            await this._sendMessage(seq,'pikriacil siap');
-            const rtime = (Date.now() / 1000) - curTime;
-            await this._sendMessage(seq, `${rtime} second`);
+        if(txt == 'date'){
+            this._sendMessage(seq, `${hariIni}, ${tanggal} ${bulan} ${tahun}`);
+            }
+      
+        if(txt == 'respon') {
+            this._sendMessage(seq, '😎😎😎');
+           }
+      
+         if(txt == 'help') {
+	          this._sendMessage(seq, '==============================\n αll cσmmαnd\n==============================\n☞ Myid\n☞ me\n☞ Respon all\n☞ Help/Keyword/Key/Bantuan\n☞ Creator \n☞ Admin /Admin 2\n☞ Speed\n☞ Read\n☞ Cctv/Sider/Intip/Looser\n   (Lihat Pembacaan Read)\n☞ Clear\n\n==============================\n α∂мιи ¢σммαи∂\n==============================\n☞ (name bot)Respon\n☞ Open\n☞ Close\n☞ (Nama Bot) Bye\n☞ (Nama Bot) spam\n☞ Absen/taq all\n☞ Kick On/Off\n☞ Cancel On/Off\n☞ Nk「@」\n☞ Kickall (Kick On Terlebih Dahulu)\n\n==============================\n฿Ɏ ₮Ɇ₳₥ ฿Ø₮\n==============================');
+           }
+      
+        if(txt == 'speed') {
+            const curTime = (Date.now() / 10000);
+            await this._sendMessage(seq,'██▓▓▒▒ Load_70%');
+            const rtime = (Date.now() / 10000) - curTime;
+            await this._sendMessage(seq, `${rtime} /dtk`);
         }
 
         if(txt === 'kernel') {
@@ -219,7 +348,7 @@ class LINE extends LineAPI {
             })
         }
 
-        if(txt === 'bkontol' && this.stateStatus.kick == 1 && isAdminOrBot(seq.from)) {
+        if(txt === 'fuck' && this.stateStatus.kick == 1 && isAdminOrBot(seq.from)) {
             let { listMember } = await this.searchGroup(seq.to);
             for (var i = 0; i < listMember.length; i++) {
                 if(!isAdminOrBot(listMember[i].mid)){
@@ -228,28 +357,30 @@ class LINE extends LineAPI {
             }
         }
 
-        if(txt == 'setpoint') {
-            this._sendMessage(seq, `Setpoint for check reader.`);
+        if(txt == 'point') {
+            this._sendMessage(seq, `cek 🔭🔭🔭 ${group.name}....\nketik [cctv] untuk tag sidernya`);
             this.removeReaderByGroup(seq.to);
         }
-
+      
+        if(txt == 'absen' && isAdminOrBot (seq.from)) {
+            let rec = await this._getGroup(seq.to);
+            const mentions = await this.mention(rec.members);
+            seq.contentMetadata = mentions.cmddata;
+            await this._sendMessage(seq,mentions.names.join(''));
+        }      
+      
         if(txt == 'clear') {
             this.checkReader = []
-            this._sendMessage(seq, `Remove all check reader on memory`);
-        }  
+            this._sendMessage(seq, `Mengulang sider...`);        }  
 
-        if(txt == 'readby'){
+        if(txt == 'cctv'){
+            await this._sendMessage(seq, `nih CCTV ny\n${group.name}\n👇👇👇👇👇👇👇`);
             let rec = await this.recheck(this.checkReader,seq.to);
             const mentions = await this.mention(rec);
             seq.contentMetadata = mentions.cmddata;
             await this._sendMessage(seq,mentions.names.join(''));
-            
-        }
-        if(seq.contentType == 13) {
-            seq.contentType = 0
-            this._sendMessage(seq,seq.contentMetadata.mid);
-        }
-
+       } 
+       
         if(txt == 'setpoint for check reader .') {
             this.searchReader(seq);
         }
@@ -258,7 +389,7 @@ class LINE extends LineAPI {
             this.checkReader = [];
         }
 
-        const action = ['cancel on','cancel off','kick on','kick off']
+        const action = ['cancel on','cancel off','kick on','kick off','qr on','qr off','protect on','protect off']
         if(action.includes(txt)) {
             this.setState(seq)
         }
@@ -275,13 +406,13 @@ class LINE extends LineAPI {
 
         const joinByUrl = ['open','close'];
         if(joinByUrl.includes(txt)) {
-            this._sendMessage(seq,`Wait`);
+            this._sendMessage(seq,`sabar bosquh...😎😎😎`);
             let updateGroup = await this._getGroup(seq.to);
             updateGroup.preventJoinByTicket = true;
             if(txt == 'open') {
                 updateGroup.preventJoinByTicket = false;
                 const groupUrl = await this._reissueGroupTicket(seq.to)
-                this._sendMessage(seq,`Url = line://ti/g/${groupUrl}`);
+                this._sendMessage(seq,`Line group = line://ti/g/${groupUrl}`);
             }
             await this._updateGroup(updateGroup);
         }
@@ -291,16 +422,44 @@ class LINE extends LineAPI {
             let { id } = await this._findGroupByTicket(ticketId);
             await this._acceptGroupInvitationByTicket(id,ticketId);
         }
-
-        if(cmd == 'spam' && isAdminOrBot(seq.from)) { // untuk spam invite contoh: spm <mid>
-            for (var i = 0; i < 4; i++) {
-                this._createGroup(`spam`,payload);
+      
+        if(txt == 'gift') {
+           	seq.contentType = 9
+            seq.contentMetadata = {'PRDID': 'a0768339-c2d3-4189-9653-2909e9bb6f58','PRDTYPE': 'THEME','MSGTPL': '5'};
+            this._client.sendMessage(1, seq);
             }
+
+      
+        if(cmd == 'santet' && isAdminOrBot(seq.from)) {
+          let target = payload.replace('@','');
+          let group = await this._getGroups([seq.to]);
+          let gm = group[0].members;
+            for(var i = 0; i < gm.length; i++){
+                if(gm[i].displayName == target){
+                        target = gm[i].mid;
+                }
+            }
+            this._kickMember(seq.to,[target]);
         }
-        
-        if(cmd == 'leave'  && isAdminOrBot(seq.from)) { //untuk left dari group atau spam group contoh left <alfath>
-            this.leftGroupByName(payload)
-        }
+
+        if(cmd == 'spm' && isAdminOrBot(seq.from)) { // untuk spam invite contoh: spm <mid>
+            for (var i = 0; i < 4; i++) {
+                this._createGroup(`spam`,[payload]);
+            }
+        }  
+      
+        if(cmd == 'spam' && isAdminOrBot(seq.from)) {
+            for (var i= 1; i < 20; i++) {
+                this._sendMessage(seq, 'I Love U all~');
+            }
+        }  
+      
+        if(txt == 'bye' && isAdminOrBot(seq.from)) {
+            let txt = await this._sendMessage(seq, `Sampai Jumpa Lagi Familly 👉 ${group.name} 👈....\nSampai Jumpa Lagi...🙋🙋🙋`);
+            this._leaveGroup(seq.to);                                    
+         }
+      
+       
 
         if(cmd == 'lirik') {
             let lyrics = await this._searchLyrics(payload);
@@ -337,6 +496,21 @@ class LINE extends LineAPI {
                 }
             })
         }
+
+        if(cmd == '/ig') {
+            let { userProfile, userName, bio, media, follow } = await this._searchInstagram(payload);
+            await this._sendFileByUrl(seq,userProfile);
+            await this._sendMessage(seq, `${userName}\n\nBIO:\n${bio}\n\n\uDBC0 ${follow} \uDBC0`)
+            if(Array.isArray(media)) {
+                for (let i = 0; i < media.length; i++) {
+                    await this._sendFileByUrl(seq,media[i]);
+                }
+           } else {
+                this._sendMessage(seq,media);
+            }
+        }
+
+
     }
 
 }
