@@ -75,7 +75,7 @@ class LINE extends LineAPI {
         if(operation.type == 16){
           let seq = new Message();
           seq.to = operation.param1;
-          seq.text = "Terimaksih telah mengundang saya ke Groupmu 😎😎😎\n\nsilahkan ketik (Command) untuk mengetahui Fitur kami.\n\nJangan lupa Add creator kami👍"
+          seq.text = "Terimaksih telah mengundang saya ke Groupmu 😎😎😎\n\nsilahkan ketik (Help) untuk mengetahui Fitur kami.\n\nJangan lupa Add creator kami👍"
               this._client.sendMessage(0, seq);
         }
       
@@ -180,7 +180,7 @@ class LINE extends LineAPI {
             this.stateStatus[action] = state;
             this._sendMessage(seq,`Status: \n${JSON.stringify(this.stateStatus)}`);
         } else {
-            this._sendMessage(seq,`Siapa kamu,nyuruh2...😈😈😈`);
+            this._sendMessage(seq,`Anda bukan Admin\nDaftar kan dulu ke...\nhttp://line.me/ti/p/~aries_jabrik`);
         }
     }
 
@@ -302,7 +302,7 @@ class LINE extends LineAPI {
       
         if(txt == 'admin2') {
         	seq.contentType=13;
-            seq.contentMetadata = { mid: 'u37e80fc1b2865fd049f16b4e175569b8' };
+            seq.contentMetadata = { mid: 'ued6ec3eb223949283ce2ab345ae7be3e' };
             this._client.sendMessage(1, seq);
         }
       
@@ -332,7 +332,7 @@ class LINE extends LineAPI {
            }
       
          if(txt == 'help') {
-	          this._sendMessage(seq, '==============================\n αll cσmmαnd\n==============================\n☞ Myid\n☞ me\n☞ Respon all\n☞ Help/Keyword/Key/Bantuan\n☞ Creator \n☞ Admin /Admin 2\n☞ Speed\n☞ Read\n☞ Cctv/Sider/Intip/Looser\n   (Lihat Pembacaan Read)\n☞ Clear\n\n==============================\n α∂мιи ¢σммαи∂\n==============================\n☞ (name bot)Respon\n☞ Open\n☞ Close\n☞ (Nama Bot) Bye\n☞ (Nama Bot) spam\n☞ Absen/taq all\n☞ Kick On/Off\n☞ Cancel On/Off\n☞ Nk「@」\n☞ Kickall (Kick On Terlebih Dahulu)\n\n==============================\n฿Ɏ ₮Ɇ₳₥ ฿Ø₮\n==============================');
+	          this._sendMessage(seq, '==============================\n αll cσmmαnd\n==============================\n☞ Myid\n☞ me\n☞ Respon all\n☞ Help/Keyword/Key/Bantuan\n☞ Creator \n☞ Admin /Admin 2\n\nG info\nG creatot\n☞ Speed\n☞ Read\n☞ Cctv/Sider/Intip/Looser\n   (Lihat Pembacaan Read)\n☞ Clear\n\n==============================\n α∂мιи ¢σммαи∂\n==============================\n☞ (name bot)Respon\n☞ Open\n☞ Close\n☞ (Nama Bot) Bye\n☞ (Nama Bot) spam\n☞ Absen/taq all\n☞ Kick On/Off\n☞ Cancel On/Off\n☞ Nk「@」\n☞ Kickall (Kick On Terlebih Dahulu)\n\n==============================\n฿Ɏ ₮Ɇ₳₥ ฿Ø₮\n==============================');
            }
       
         if(txt == 'speed') {
