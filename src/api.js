@@ -52,7 +52,7 @@ class LineAPI {
   _qrCodeLogin() {
     this.setTHttpClient();
     return new Promise((resolve, reject) => {
-    this._client.getAuthQrcode(true, 'Alfathdirk-PC',(err, result) => {
+    this._client.getAuthQrcode(true, 'SELFBOT PHET HACK BOT-PC',(err, result) => {
       // console.log('here')
       const qrcodeUrl = `line://au/q/${result.verifier}`;
       qrcode.generate(qrcodeUrl,{small: true});
